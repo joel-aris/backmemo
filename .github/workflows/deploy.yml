@@ -1,0 +1,23 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # The deploy key on the VPS is restricted (forced command in
+      # authorized_keys) to only ever run /var/www/validika-backend/deploy.sh,
+      # regardless of what is requested here. This keeps the key harmless
+      # even if this workflow or the secret were ever compromised.
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: echo deploying
