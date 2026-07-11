@@ -1,0 +1,348 @@
+{
+  "info": {
+    "name": "VALIDIKA API",
+    "description": "API sécurisée de gestion documentaire pour l'Ordre National des Pharmaciens de la RDC.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "qr_code",
+      "value": "QR.PH-RDC-2026-000001"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Public Verification",
+      "item": [
+        {
+          "name": "Verify QR Code (Pharmacist or Document)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/verify/{{qr_code}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Territories",
+      "item": [
+        {
+          "name": "List Provinces (26 DRC)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/territories/provinces"
+          }
+        },
+        {
+          "name": "List Cities",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/territories/cities?province_id={{province_id}}"
+          }
+        },
+        {
+          "name": "List Communes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/territories/communes?city_id={{city_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "auth": { "type": "noauth" },
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "fr" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jean Dupont\",\n  \"email\": \"jean@example.cd\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\"\n}"
+            },
+            "url": "{{base_url}}/v1/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "auth": { "type": "noauth" },
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "fr" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@validika.cd\",\n  \"password\": \"password\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": "{{base_url}}/v1/auth/login"
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pharmacists",
+      "item": [
+        {
+          "name": "List (Search)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/pharmaciens?q=Jean&province=Kinshasa&per_page=20"
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "first_name", "value": "Jean", "type": "text" },
+                { "key": "middle_name", "value": "Pierre", "type": "text" },
+                { "key": "last_name", "value": "Mukendi", "type": "text" },
+                { "key": "ordinal_number", "value": "ONP-RDC-24-01892", "type": "text" },
+                { "key": "license_number", "value": "CNOP-RDC-2026-001892", "type": "text" },
+                { "key": "province_id", "value": "{{province_id}}", "type": "text" },
+                { "key": "city_id", "value": "{{city_id}}", "type": "text" },
+                { "key": "commune_id", "value": "{{commune_id}}", "type": "text" },
+                { "key": "sex", "value": "M", "type": "text" },
+                { "key": "professional_address", "value": "Av. de la Liberation 123", "type": "text" },
+                { "key": "professional_phone", "value": "+243812345678", "type": "text" },
+                { "key": "professional_email", "value": "jean.mukendi@pharma.cd", "type": "text" },
+                { "key": "professional_status", "value": "active", "type": "text" },
+                { "key": "registered_at", "value": "2024-01-15", "type": "text" },
+                { "key": "practice_started_at", "value": "2024-01-15", "type": "text" },
+                { "key": "license_status", "value": "active", "type": "text" },
+                { "key": "pharmacy_establishment", "value": "Pharmacie du Peuple", "type": "text" },
+                { "key": "photo", "type": "file", "src": [] }
+              ]
+            },
+            "url": "{{base_url}}/v1/pharmacists"
+          }
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/pharmacists/{{pharmacist_id}}"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"professional_status\": \"active\",\n  \"specialization\": \"Cardiologie\"\n}"
+            },
+            "url": "{{base_url}}/v1/pharmacists/{{pharmacist_id}}"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/pharmacists/{{pharmacist_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] },
+                { "key": "title", "value": "Attestation de stage", "type": "text" },
+                { "key": "type", "value": "certificate", "type": "text" },
+                { "key": "issued_at", "value": "2026-01-01", "type": "text" },
+                { "key": "pharmacist_id", "value": "{{pharmacist_id}}", "type": "text" }
+              ]
+            },
+            "url": "{{base_url}}/v1/documents/upload"
+          }
+        },
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/documents?per_page=20"
+          }
+        },
+        {
+          "name": "Show (with cryptographic proof)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/documents/{{document_id}}"
+          }
+        },
+        {
+          "name": "Sign",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/documents/{{document_id}}/sign"
+          }
+        },
+        {
+          "name": "Verify",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/documents/{{document_id}}/verify"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nouveau titre\"\n}"
+            },
+            "url": "{{base_url}}/v1/documents/{{document_id}}"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/documents/{{document_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/admin/stats"
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/admin/audit-logs?per_page=25"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jean Dupont\",\n  \"email\": \"jean@example.cd\",\n  \"subject\": \"Demande d\\'information\",\n  \"message\": \"Bonjour, je souhaite verifier une licence.\"\n}"
+            },
+            "url": "{{base_url}}/v1/contact"
+          }
+        }
+      ]
+    },
+    {
+      "name": "FAQs",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/faqs/categories"
+          }
+        },
+        {
+          "name": "List FAQs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/v1/faqs"
+          }
+        }
+      ]
+    }
+  ]
+}
