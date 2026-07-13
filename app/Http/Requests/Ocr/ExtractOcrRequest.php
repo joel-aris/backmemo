@@ -10,7 +10,9 @@ final class ExtractOcrRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        // /ocr/extract is intentionally public (see routes/api.php): it's
+        // used from the unauthenticated public candidacy form.
+        return true;
     }
 
     public function rules(): array

@@ -48,13 +48,14 @@ final class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        // 2FA is mandatory for staff/admin roles, which hold sensitive access.
-        // Public "Visiteur" accounts (self-registered from the web/mobile
-        // register form) have no such access and are exempt, otherwise every
-        // freshly registered user would be locked out with no way to set up
-        // 2FA in the first place (the setup endpoints themselves require an
-        // authenticated token that login never issues in this state).
-        $requiresTwoFactor = ! app()->environment('local') && ! $user->hasRole('Visiteur');
+        // TEMPORARY: 2FA enforcement is disabled for every role, not just
+        // "Visiteur". There is no working self-service 2FA setup screen on
+        // either client yet (the setup endpoints require a token that login
+        // never issues while setup is pending), so any staff/admin account
+        // was permanently locked out exactly like visitors were before.
+        // Re-enable per-role once a real setup flow (QR code + OTP confirm)
+        // ships on web/mobile — see audit notes.
+        $requiresTwoFactor = false;
 
         if ($requiresTwoFactor && ! $user->two_factor_confirmed_at) {
             return response()->json([

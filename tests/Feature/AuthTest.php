@@ -51,8 +51,12 @@ final class AuthTest extends TestCase
             ->assertJsonStructure(['access_token']);
     }
 
-    public function test_staff_role_still_requires_2fa_setup_before_login(): void
+    public function test_staff_role_can_log_in_while_2fa_enforcement_is_disabled(): void
     {
+        // 2FA enforcement is temporarily disabled for every role (see the
+        // comment in AuthController::login): there's no working self-service
+        // setup screen on web/mobile yet, so enforcing it locked every
+        // staff/admin account out with no way to proceed.
         $this->seed(\Database\Seeders\RolePermissionSeeder::class);
 
         $user = \App\Models\User::factory()->create(['password' => 'Password!2026']);
@@ -62,7 +66,8 @@ final class AuthTest extends TestCase
             'email' => $user->email,
             'password' => 'Password!2026',
         ])
-            ->assertStatus(423)
-            ->assertJsonPath('requires_2fa_setup', true);
+            ->assertOk()
+            ->assertJsonPath('requires_2fa_setup', false)
+            ->assertJsonStructure(['access_token']);
     }
 }

@@ -71,7 +71,11 @@ Route::prefix('v1')->group(function (): void {
         });
     });
 
-    Route::middleware(['auth:sanctum', 'throttle:10,1'])->post('/ocr/extract', [OcrController::class, 'extract'])
+    // Public: OCR pre-fill is used from the public, unauthenticated candidacy
+    // form (scan a professional card/diploma/ID to prefill name/order number/
+    // expiry before an account even exists). Rate-limited instead of gated
+    // behind auth:sanctum, which made it unusable from that exact flow.
+    Route::middleware('throttle:10,1')->post('/ocr/extract', [OcrController::class, 'extract'])
         ->name('api.v1.ocr.extract');
 
     Route::middleware(['auth:sanctum', 'verified', 'role:Administrateur|Super Admin'])->prefix('admin')->group(function (): void {
