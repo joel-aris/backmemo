@@ -37,9 +37,15 @@ final class PharmacistController extends Controller
 
         $pharmacists = $this->pharmacists->search($data);
 
-        return response()->json([
-            'data' => $pharmacists->load(['province', 'city', 'commune', 'documents']),
-        ]);
+        // LengthAwarePaginator has no load() of its own: the call was silently
+        // forwarded (via __call) to the underlying Collection, which returns the
+        // Collection itself and discards the paginator (current_page/last_page/
+        // total). That made pagination past the first page impossible for any
+        // client. Eager-load on the underlying collection in place instead, and
+        // return the paginator so the metadata survives.
+        $pharmacists->getCollection()->load(['province', 'city', 'commune', 'documents']);
+
+        return response()->json($pharmacists);
     }
 
     public function store(StorePharmacistRequest $request): JsonResponse

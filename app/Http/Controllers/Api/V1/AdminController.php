@@ -108,6 +108,16 @@ final class AdminController extends Controller
 
     public function updateUser(Request $request, User $user): JsonResponse
     {
+        // The route only requires the "Administrateur|Super Admin" role, but role
+        // assignment itself must stay Super-Admin-only: otherwise an Administrateur
+        // could grant themselves (or anyone) the Super Admin role through this same
+        // endpoint, which is a straight privilege escalation.
+        abort_if(
+            $request->filled('roles') && ! $request->user()?->hasRole('Super Admin'),
+            403,
+            'Seul un Super Admin peut modifier les roles.'
+        );
+
         $data = $request->validate([
             'name' => ['sometimes', 'string', 'regex:/^[\pL\s\'-]+$/u', 'max:160'],
             'email' => ['sometimes', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],

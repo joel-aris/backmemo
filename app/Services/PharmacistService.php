@@ -53,7 +53,12 @@ final class PharmacistService
 
         $pharmacist->fill($data)->save();
 
-        return $pharmacist->refresh();
+        // Any field in the canonical payload (name, license status/expiry, etc.)
+        // is covered by the verification_hash/signature. Without recomputing them
+        // here, every legitimate edit (e.g. suspending a license) would make the
+        // pharmacist's own cryptographic proof report itself as invalid until
+        // someone remembered to run `pharmacists:recalculate-proofs` by hand.
+        return $this->recalculateProof($pharmacist);
     }
 
     /**

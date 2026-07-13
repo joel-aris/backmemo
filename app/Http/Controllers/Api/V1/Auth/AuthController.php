@@ -48,9 +48,15 @@ final class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $skipTwoFactorInLocal = app()->environment('local');
+        // 2FA is mandatory for staff/admin roles, which hold sensitive access.
+        // Public "Visiteur" accounts (self-registered from the web/mobile
+        // register form) have no such access and are exempt, otherwise every
+        // freshly registered user would be locked out with no way to set up
+        // 2FA in the first place (the setup endpoints themselves require an
+        // authenticated token that login never issues in this state).
+        $requiresTwoFactor = ! app()->environment('local') && ! $user->hasRole('Visiteur');
 
-        if (! $skipTwoFactorInLocal && ! $user->two_factor_confirmed_at) {
+        if ($requiresTwoFactor && ! $user->two_factor_confirmed_at) {
             return response()->json([
                 'message' => 'Configuration 2FA requise avant connexion.',
                 'requires_2fa_setup' => true,
@@ -58,11 +64,11 @@ final class AuthController extends Controller
             ], 423);
         }
 
-        if (! $skipTwoFactorInLocal && ! $request->filled('otp')) {
+        if ($requiresTwoFactor && ! $request->filled('otp')) {
             return response()->json(['message' => 'Code OTP requis.', 'requires_2fa' => true], 423);
         }
 
-        if (! $skipTwoFactorInLocal) {
+        if ($requiresTwoFactor) {
             $valid = app('pragmarx.google2fa')->verifyKey(
                 decrypt((string) $user->two_factor_secret),
                 $request->string('otp')->toString()
